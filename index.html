@@ -1,204 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rediscover Gear Builder</title>
-<style>
-  body {
-    background:#0c0c0f;
-    color:#e7ecf7;
-    font-family:sans-serif;
-    text-align:center;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rediscover • Gear Builder</title>
+  <style>
+    body {
+      background:#0d0d0f;
+      color:#eee;
+      font-family:sans-serif;
+      margin:0;
+      text-align:center;
+    }
+    h1 { font-size:1.2rem; padding:1rem; }
+    .gear-ring {
+      position:relative;
+      width:320px; height:320px;
+      margin:1rem auto;
+    }
+    .slot {
+      width:64px; height:64px;
+      background:#111; border:2px solid #333;
+      display:flex; align-items:center; justify-content:center;
+      font-size:.8rem; cursor:pointer;
+      position:absolute; border-radius:8px;
+    }
+    /* positions */
+    .helm { top:0; left:50%; transform:translate(-50%,0); }
+    .chest { top:20%; right:0; transform:translate(0,-50%); }
+    .gloves { top:50%; right:0; transform:translate(0,-50%); }
+    .boots { bottom:20%; right:0; transform:translate(0,50%); }
+    .belt { bottom:0; left:50%; transform:translate(-50%,0); }
+    .ring { bottom:20%; left:0; transform:translate(0,50%); }
+    .weapon { top:50%; left:0; transform:translate(0,-50%); }
+    .necklace { top:20%; left:0; transform:translate(0,-50%); }
 
-  .gear-ring {
-    position:relative;
-    width:300px; height:300px;
-    margin:2rem auto;
-  }
-  .slot {
-    width:64px; height:64px;
-    background:#111;
-    border:2px solid #444;
-    display:flex; align-items:center; justify-content:center;
-    font-size:.8rem; cursor:pointer;
-    position:absolute;
-    border-radius:6px;
-  }
-  .helm { top:0; left:50%; transform:translate(-50%,-50%); }
-  .chest { top:20%; right:0; transform:translate(50%,-50%); }
-  .gloves { top:50%; right:0; transform:translate(50%,-50%); }
-  .boots { bottom:20%; right:0; transform:translate(50%,50%); }
-  .belt { bottom:0; left:50%; transform:translate(-50%,50%); }
-  .ring { bottom:20%; left:0; transform:translate(-50%,50%); }
-  .weapon { top:50%; left:0; transform:translate(-50%,-50%); }
-  .necklace { top:20%; left:0; transform:translate(-50%,-50%); }
-
-  /* modal */
-  .modal {
-    position:fixed; top:0; left:0;
-    width:100%; height:100%;
-    background:rgba(0,0,0,0.7);
-    display:flex; align-items:center; justify-content:center;
-  }
-  .hidden { display:none; }
-
-  .gear-card {
-    background:#1c1f29;
-    border:2px solid #444;
-    border-radius:12px;
-    padding:1rem;
-    color:#e7ecf7;
-    width:90%; max-width:400px;
-    text-align:left;
-  }
-  .gear-header { display:flex; align-items:center; gap:.75rem; }
-  .gear-icon { width:48px; height:48px; border:2px solid gold; border-radius:6px; }
-  .tier-label { font-size:.85rem; color:#aaa; }
-
-  .gear-stats { margin-top:.5rem; display:flex; flex-direction:column; gap:.5rem; }
-  .line { display:flex; align-items:center; gap:.5rem; }
-  .line span { flex:0 0 60px; }
-  .line select, .line input {
-    flex:1;
-    padding:.35rem;
-    border-radius:6px;
-    border:1px solid #333;
-    background:#0f1219;
-    color:#e7ecf7;
-  }
-
-  .gear-buttons {
-    display:flex;
-    justify-content:space-between;
-    margin-top:1rem;
-  }
-  .gear-buttons button {
-    flex:1; margin:0 .25rem; padding:.6rem;
-    font-size:1rem; font-weight:600;
-    border:none; border-radius:6px; cursor:pointer;
-  }
-  button.save { background:#2d6; color:#fff; }
-  button.close { background:#a33; color:#fff; }
-</style>
+    /* modal */
+    .modal {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.7); display:none;
+      align-items:center; justify-content:center;
+    }
+    .modal-content {
+      background:#1a1c22; color:#fff;
+      padding:1rem; border-radius:10px;
+      width:90%; max-width:400px;
+      text-align:left;
+    }
+    .modal-content h3 {
+      margin-top:0; font-size:1rem;
+      border-bottom:1px solid #444; padding-bottom:.5rem;
+    }
+    .field-group { margin:.5rem 0; }
+    label { display:block; font-size:.8rem; margin-bottom:.2rem; }
+    select, input {
+      width:100%; padding:.3rem; margin-bottom:.5rem;
+      border-radius:4px; border:1px solid #333; background:#222; color:#fff;
+    }
+    .line { display:flex; gap:.5rem; align-items:center; }
+    .line select { flex:1; }
+    .line input { flex:1; }
+    .buttons { display:flex; justify-content:space-between; margin-top:1rem; }
+    .buttons button {
+      flex:1; margin:0 .5rem; padding:.5rem;
+      border:none; border-radius:5px; font-weight:bold;
+      cursor:pointer;
+    }
+    .save { background:#2ecc71; color:#000; }
+    .close { background:#e74c3c; color:#000; }
+  </style>
 </head>
 <body>
+  <h1>Rediscover • Gear Builder</h1>
 
-<h2>Rediscover • Gear Builder</h2>
+  <div class="gear-ring">
+    <div class="slot helm">Helm</div>
+    <div class="slot chest">Chest</div>
+    <div class="slot gloves">Gloves</div>
+    <div class="slot boots">Boots</div>
+    <div class="slot belt">Belt</div>
+    <div class="slot ring">Ring</div>
+    <div class="slot weapon">Weapon</div>
+    <div class="slot necklace">Necklace</div>
+  </div>
 
-<div class="gear-ring">
-  <div class="slot helm" onclick="openEditor('Helm')">Helm</div>
-  <div class="slot chest" onclick="openEditor('Chest')">Chest</div>
-  <div class="slot gloves" onclick="openEditor('Gloves')">Gloves</div>
-  <div class="slot boots" onclick="openEditor('Boots')">Boots</div>
-  <div class="slot belt" onclick="openEditor('Belt')">Belt</div>
-  <div class="slot ring" onclick="openEditor('Ring')">Ring</div>
-  <div class="slot weapon" onclick="openEditor('Weapon')">Weapon</div>
-  <div class="slot necklace" onclick="openEditor('Necklace')">Necklace</div>
-</div>
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Edit Gear</h3>
+      <div class="field-group">
+        <label for="tier">Tier:</label>
+        <select id="tier">
+          <option>Primal</option>
+          <option>Chaos</option>
+          <option>Abyss</option>
+          <option>Original</option>
+        </select>
+      </div>
 
-<!-- Modal -->
-<div id="editorModal" class="modal hidden">
-  <div class="gear-card">
-    <div class="gear-header">
-      <img src="https://via.placeholder.com/48" id="gearIcon" class="gear-icon">
-      <div>
-        <h3 id="modalTitle">Edit Gear</h3>
-        <p class="tier-label" id="tierLabel">–</p>
+      <div class="field-group">
+        <label for="rune">Rune:</label>
+        <select id="rune">
+          <option>ATK SPD</option>
+          <option>Crit Chance</option>
+          <option>Evasion</option>
+          <option>DR%</option>
+          <option>Crit DMG%</option>
+          <option>Racial DMG</option>
+          <option>ATK%</option>
+          <option>HP%</option>
+          <option>DEF%</option>
+        </select>
+        <input type="number" id="runeValue" placeholder="Rune Value">
+      </div>
+
+      <div class="field-group">
+        <label for="special">Special:</label>
+        <select id="special">
+          <option>Crit DMG +80%</option>
+          <option>HP% +52%</option>
+          <option>Boss DMG</option>
+          <option>Racial DMG</option>
+        </select>
+      </div>
+
+      <hr>
+      <div class="line"><span>Line 1:</span>
+        <select><option>ATK%</option><option>Crit DMG%</option><option>Crit Chance</option><option>Evasion</option><option>HP%</option><option>DEF%</option><option>DR%</option><option>Lifesteal%</option><option>ATK SPD</option><option>Racial DMG</option></select>
+        <input type="number" placeholder="Value">
+      </div>
+      <div class="line"><span>Line 2:</span>
+        <select><option>ATK%</option><option>Crit DMG%</option><option>Crit Chance</option><option>Evasion</option><option>HP%</option><option>DEF%</option><option>DR%</option><option>Lifesteal%</option><option>ATK SPD</option><option>Racial DMG</option></select>
+        <input type="number" placeholder="Value">
+      </div>
+      <div class="line"><span>Line 3:</span>
+        <select><option>ATK%</option><option>Crit DMG%</option><option>Crit Chance</option><option>Evasion</option><option>HP%</option><option>DEF%</option><option>DR%</option><option>Lifesteal%</option><option>ATK SPD</option><option>Racial DMG</option></select>
+        <input type="number" placeholder="Value">
+      </div>
+      <div class="line"><span>Line 4:</span>
+        <select><option>ATK%</option><option>Crit DMG%</option><option>Crit Chance</option><option>Evasion</option><option>HP%</option><option>DEF%</option><option>DR%</option><option>Lifesteal%</option><option>ATK SPD</option><option>Racial DMG</option></select>
+        <input type="number" placeholder="Value">
+      </div>
+
+      <div class="buttons">
+        <button class="save">Save</button>
+        <button class="close" id="closeBtn">Close</button>
       </div>
     </div>
-
-    <hr>
-
-    <div class="gear-stats">
-      <div class="field-group">
-  <label for="tier">Tier:</label>
-  <select id="tier">
-    <option>Primal</option>
-    <option>Chaos</option>
-    <option>Abyss</option>
-    <option>Original</option>
-  </select>
-</div>
-
-<div class="field-group">
-  <label for="rune">Rune:</label>
-  <select id="rune">
-    <option>ATK SPD</option>
-    <option>Crit Chance</option>
-    <option>Evasion</option>
-    <option>DR%</option>
-    <option>Crit DMG%</option>
-    <option>Racial DMG</option>
-    <option>ATK%</option>
-    <option>HP%</option>
-    <option>DEF%</option>
-  </select>
-  <input type="number" id="runeValue" placeholder="Value">
-</div>
-      <hr>
-
-      <div class="line"><span>Line 1:</span><select id="line1Stat"></select><input type="number" id="line1Val" placeholder="Value"></div>
-      <div class="line"><span>Line 2:</span><select id="line2Stat"></select><input type="number" id="line2Val" placeholder="Value"></div>
-      <div class="line"><span>Line 3:</span><select id="line3Stat"></select><input type="number" id="line3Val" placeholder="Value"></div>
-      <div class="line"><span>Line 4:</span><select id="line4Stat"></select><input type="number" id="line4Val" placeholder="Value"></div>
-    </div>
-
-    <div class="gear-buttons">
-      <button class="save" onclick="saveEditor()">Save</button>
-      <button class="close" onclick="closeEditor()">Close</button>
-    </div>
   </div>
-</div>
 
-<script>
-const DATA = {
-  tiers: ['Primal','Original','Chaos','Abyss'],
-  runes: ['','ATK SPD','Crit Chance','Evasion','DR'],
-  specials: ['','Crit DMG +80%','HP% +52%','Boss DMG','Racial DMG'],
-  stats: ['','ATK%','Crit DMG%','Crit Chance','Evasion','HP%','DEF%','DR%','Lifesteal%','ATK SPD','Racial DMG']
-};
+  <script>
+    const slots = document.querySelectorAll('.slot');
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const closeBtn = document.getElementById('closeBtn');
 
-function fillSelect(id, options){
-  const sel = document.getElementById(id);
-  sel.innerHTML = '';
-  options.forEach(opt => {
-    const o = document.createElement('option');
-    o.value = o.textContent = opt;
-    sel.appendChild(o);
-  });
-}
+    slots.forEach(slot => {
+      slot.addEventListener('click', () => {
+        modalTitle.textContent = "Edit " + slot.textContent;
+        modal.style.display = "flex";
+      });
+    });
 
-function openEditor(slot){
-  document.getElementById('modalTitle').textContent = `Edit ${slot}`;
-  document.getElementById('tierLabel').textContent = 'Chaos • Ultimate'; // placeholder text
-  fillSelect('editTier', DATA.tiers);
-  fillSelect('editRune', DATA.runes);
-  fillSelect('editSpecial', DATA.specials);
-  fillSelect('line1Stat', DATA.stats);
-  fillSelect('line2Stat', DATA.stats);
-  fillSelect('line3Stat', DATA.stats);
-  fillSelect('line4Stat', DATA.stats);
-
-  document.getElementById('editorModal').classList.remove('hidden');
-}
-
-function closeEditor(){
-  document.getElementById('editorModal').classList.add('hidden');
-}
-
-function saveEditor(){
-  // grab values (later tie into optimizer rules)
-  const tier = document.getElementById('editTier').value;
-  const rune = document.getElementById('editRune').value;
-  const special = document.getElementById('editSpecial').value;
-  const l1 = document.getElementById('line1Stat').value + " " + document.getElementById('line1Val').value;
-  const l2 = document.getElementById('line2Stat').value + " " + document.getElementById('line2Val').value;
-  console.log("Saved:", {tier,rune,special,l1,l2});
-  closeEditor();
-}
-</script>
-
+    closeBtn.addEventListener('click', () => {
+      modal.style.display = "none";
+    });
+  </script>
 </body>
 </html>
