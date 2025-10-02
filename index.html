@@ -1,409 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gear Ring Test</title>
-  <style>
-    
-    body { background:#0b0c0f; color:#e7ecf7; font-family:sans-serif; text-align:center; }
-    .gear-ring { position:relative; width:320px; height:320px; margin:2rem auto; }
-    .slot {
-      width:64px; height:64px;
-      background:#111; border:2px solid #333; border-radius:8px;
-      display:flex; align-items:center; justify-content:center;
-      font-size:.8rem; cursor:pointer; position:absolute;
-    }
-    /* positions */
-    .helm { top:0; left:50%; transform:translateX(-50%); }
-    .chest { top:20%; right:0; transform:translateY(-50%); }
-    .gloves { top:50%; right:0; transform:translateY(-50%); }
-    .boots { bottom:20%; right:0; transform:translateY(50%); }
-    .belt { bottom:0; left:50%; transform:translateX(-50%); }
-    .ring { bottom:20%; left:0; transform:translateY(50%); }
-    .weapon { top:50%; left:0; transform:translateY(-50%); }
-    .necklace { top:20%; left:0; transform:translateY(-50%); }
-    /* modal */
-    .modal { 
-      position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center;
-    }
-    .modal-content { background:#1a1c22; padding:1rem; border-radius:8px; min-width:220px; }
-    .hidden { display:none; }
-    button { margin-top:1rem; padding:.4rem .8rem; }
- /* top grid (Tier / Rune / Special) */
-.form-grid.top{
-  display:grid;
-  grid-template-columns:80px 1fr 80px 1fr 80px 1fr;
-  gap:.5rem;
-  align-items:center;
-}
-.form-grid.top label{ text-align:right; padding-right:.5rem }
-.form-grid.top select{ width:100%; padding:.35rem; border-radius:6px; border:1px solid #333; background:#0f1219; color:#e7ecf7 }
-
-/* lines section: one row per line, left→right */
-.lines{ display:flex; flex-direction:column; gap:.5rem }
-.line-row{
-  display:grid;
-  grid-template-columns:80px 1fr 90px;  /* Label | Stat select | Value */
-  gap:.5rem; align-items:center;
-}
-.line-row label{ text-align:right; padding-right:.5rem }
-.line-row select, .line-row input{
-  width:100%; padding:.35rem; border-radius:6px; border:1px solid #333; background:#0f1219; color:#e7ecf7
-}
-
-/* buttons row */
-.buttons{ display:flex; gap:.5rem; justify-content:flex-end; margin-top:1rem }
-.buttons button{ padding:.4rem .8rem; border-radius:6px; border:1px solid #333; background:#222; color:#e7ecf7; cursor:pointer }
-.buttons button:hover{ background:#3a3a3a }
-    .gear-card {
-  background:#1c1f29;
-  border:2px solid #444;
-  border-radius:12px;
-  padding:1rem;
-  color:#e7ecf7;
-  font-family:sans-serif;
-}
-
-.gear-header {
-  display:flex;
-  align-items:center;
-  gap:.75rem;
-}
-
-.gear-icon {
-  width:48px; height:48px;
-  border:2px solid gold;
-  border-radius:6px;
-}
-
-.tier-label {
-  font-size:.85rem;
-  color:#aaa;
-}
-
-.gear-stats {
-  margin-top:.5rem;
-  display:flex;
-  flex-direction:column;
-  gap:.5rem;
-}
-
-.line {
-  display:flex;
-  align-items:center;
-  gap:.5rem;
-}
-
-.line span {
-  flex:0 0 60px;
-}
-
-.line select, .line input {
-  flex:1;
-  padding:.35rem;
-  border-radius:6px;
-  border:1px solid #333;
-  background:#0f1219;
-  color:#e7ecf7;
-}
-
-.gear-buttons {
-  display:flex;
-  justify-content:space-between;
-  margin-top:1rem;
-}
-
-.gear-buttons button {
-  flex:1;
-  margin:0 .25rem;
-  padding:.6rem;
-  font-size:1rem;
-  font-weight:600;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-button.save { background:#2d6; color:#fff; }
-button.close { background:#a33; color:#fff; }
-    <script>
-  // Data you can expand later (pull from JSON once you're <script>
-  const DATA = {
-    tiers: ['Primal','Original','Chaos','Abyss'],
-    runes: ['', 'ATK SPD','Crit Chance','Evasion','DR'],
-    // Special (5th) choices you called out
-    specials: ['', 'Crit DMG +80%','HP% +52%','Boss DMG','Racial DMG'],
-    // Normal stat pool (now includes ATK SPD + Racial DMG)
-    stats: ['', 'ATK%','Crit DMG%','Crit Chance','Evasion','HP%','DEF%','DR%','Lifesteal%','ATK SPD','Racial DMG']
-  };
-
-  function fillSelect(sel, options, value=''){
-    sel.innerHTML = '';
-    options.forEach(opt => sel.appendChild(new Option(opt, opt)));
-    sel.value = value ?? '';
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rediscover Gear Builder</title>
+<style>
+  body {
+    background:#0c0c0f;
+    color:#e7ecf7;
+    font-family:sans-serif;
+    text-align:center;
   }
 
-  // REPLACE your old buildLinesUI with this version
-  function buildLinesUI(slot, saved={}){
-    const wrap = document.getElementById('linesContainer');
-    wrap.className = 'form-grid lines';     // make sure correct class is set
-    wrap.innerHTML = '';
-
-    const lines = 4; // weapons same as others here
-    for (let i=1;i<=lines;i++){
-      const row = document.createElement('div');
-      row.className = 'line-row';
-
-      const label = document.createElement('label');
-      label.textContent = `Line ${i}`;
-
-      const statSel = document.createElement('select');
-      fillSelect(statSel, DATA.stats, saved[`line${i}:stat`] || '');
-      statSel.id = `editStat${i}`;
-
-      const val = document.createElement('input');
-      val.type = 'number'; val.min = '0'; val.step = '1';
-      val.placeholder = 'Value';
-      val.value = saved[`line${i}:value`] || '';
-      val.id = `editVal${i}`;
-
-      row.appendChild(label);
-      row.appendChild(statSel);
-      row.appendChild(val);
-      wrap.appendChild(row);
-    }
+  .gear-ring {
+    position:relative;
+    width:300px; height:300px;
+    margin:2rem auto;
   }
-</script>
-
-  // Open editor for a slot
-  function openEditor(slot){
-    state.currentSlot = slot;
-    $('#modalTitle').textContent = `Edit ${slot}`;
-
-    const saved = state.slots[slot] || {};
-
-    fillSelect($('#editTier'), DATA.tiers, saved.tier || '');
-    fillSelect($('#editRune'), DATA.runes, saved.rune || '');
-    fillSelect($('#editSpecial'), DATA.specials, saved.special || '');
-
-    buildLinesUI(slot, saved);
-
-    $('#editorModal').classList.remove('hidden');
+  .slot {
+    width:64px; height:64px;
+    background:#111;
+    border:2px solid #444;
+    display:flex; align-items:center; justify-content:center;
+    font-size:.8rem; cursor:pointer;
+    position:absolute;
+    border-radius:6px;
   }
+  .helm { top:0; left:50%; transform:translate(-50%,-50%); }
+  .chest { top:20%; right:0; transform:translate(50%,-50%); }
+  .gloves { top:50%; right:0; transform:translate(50%,-50%); }
+  .boots { bottom:20%; right:0; transform:translate(50%,50%); }
+  .belt { bottom:0; left:50%; transform:translate(-50%,50%); }
+  .ring { bottom:20%; left:0; transform:translate(-50%,50%); }
+  .weapon { top:50%; left:0; transform:translate(-50%,-50%); }
+  .necklace { top:20%; left:0; transform:translate(-50%,-50%); }
 
-  // Save from editor back into state + update the box text
-  function saveEditor(){
-    const slot = state.currentSlot; if(!slot) return;
-    const s = {};
-    s.tier = $('#editTier').value;
-    s.rune = $('#editRune').value;
-    s.special = $('#editSpecial').value;
+  /* modal */
+  .modal {
+    position:fixed; top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.7);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hidden { display:none; }
 
-    for(let i=1;i<=4;i++){
-      s[`line${i}:stat`]  = $('#editStat'+i).value;
-      s[`line${i}:value`] = $('#editVal'+i).value;
-    }
+  .gear-card {
+    background:#1c1f29;
+    border:2px solid #444;
+    border-radius:12px;
+    padding:1rem;
+    color:#e7ecf7;
+    width:90%; max-width:400px;
+    text-align:left;
+  }
+  .gear-header { display:flex; align-items:center; gap:.75rem; }
+  .gear-icon { width:48px; height:48px; border:2px solid gold; border-radius:6px; }
+  .tier-label { font-size:.85rem; color:#aaa; }
 
-    state.slots[slot] = s;
-
-    const box = document.querySelector(`.slot[data-slot="${slot}"]`);
-    if (box) box.textContent = `${slot}\n${s.tier || ''}`;
-
-    closeEditor();
+  .gear-stats { margin-top:.5rem; display:flex; flex-direction:column; gap:.5rem; }
+  .line { display:flex; align-items:center; gap:.5rem; }
+  .line span { flex:0 0 60px; }
+  .line select, .line input {
+    flex:1;
+    padding:.35rem;
+    border-radius:6px;
+    border:1px solid #333;
+    background:#0f1219;
+    color:#e7ecf7;
   }
 
-  function closeEditor(){ $('#editorModal').classList.add('hidden'); }
-
-  // Wire up the ring and modal buttons
-  (function boot(){
-    document.querySelectorAll('.slot').forEach(box=>{
-      box.addEventListener('click', ()=>openEditor(box.dataset.slot));
-    });
-    $('#btnSave').addEventListener('click', saveEditor);
-    $('#btnClose').addEventListener('click', closeEditor);
-  })();
-</script>
-                         
-  </style>
+  .gear-buttons {
+    display:flex;
+    justify-content:space-between;
+    margin-top:1rem;
+  }
+  .gear-buttons button {
+    flex:1; margin:0 .25rem; padding:.6rem;
+    font-size:1rem; font-weight:600;
+    border:none; border-radius:6px; cursor:pointer;
+  }
+  button.save { background:#2d6; color:#fff; }
+  button.close { background:#a33; color:#fff; }
+</style>
 </head>
 <body>
 
-  <div class="gear-ring">
-    <div class="slot helm" data-slot="Helm">Helm</div>
-    <div class="slot chest" data-slot="Chest">Chest</div>
-    <div class="slot gloves" data-slot="Gloves">Gloves</div>
-    <div class="slot boots" data-slot="Boots">Boots</div>
-    <div class="slot belt" data-slot="Belt">Belt</div>
-    <div class="slot ring" data-slot="Ring">Ring</div>
-    <div class="slot weapon" data-slot="Weapon">Weapon</div>
-    <div class="slot necklace" data-slot="Necklace">Necklace</div>
-  </div>
+<h2>Rediscover • Gear Builder</h2>
 
-  <div id="editorModal" class="modal hidden">
-  <div class="modal-content">
-    <h3 id="modalTitle"></h3>
+<div class="gear-ring">
+  <div class="slot helm" onclick="openEditor('Helm')">Helm</div>
+  <div class="slot chest" onclick="openEditor('Chest')">Chest</div>
+  <div class="slot gloves" onclick="openEditor('Gloves')">Gloves</div>
+  <div class="slot boots" onclick="openEditor('Boots')">Boots</div>
+  <div class="slot belt" onclick="openEditor('Belt')">Belt</div>
+  <div class="slot ring" onclick="openEditor('Ring')">Ring</div>
+  <div class="slot weapon" onclick="openEditor('Weapon')">Weapon</div>
+  <div class="slot necklace" onclick="openEditor('Necklace')">Necklace</div>
+</div>
 
-    <div class="form-grid top">
-      <label>Tier</label>
-      <select id="editTier"></select>
-
-      <label>Rune</label>
-      <select id="editRune"></select>
-
-      <label>Special</label>
-      <select id="editSpecial"></select>
+<!-- Modal -->
+<div id="editorModal" class="modal hidden">
+  <div class="gear-card">
+    <div class="gear-header">
+      <img src="https://via.placeholder.com/48" id="gearIcon" class="gear-icon">
+      <div>
+        <h3 id="modalTitle">Edit Gear</h3>
+        <p class="tier-label" id="tierLabel">–</p>
+      </div>
     </div>
 
     <hr>
 
-    <div id="linesContainer" class="form-grid lines"></div>
+    <div class="gear-stats">
+      <div><strong>Rune:</strong> <select id="editRune"></select></div>
+      <div><strong>Special:</strong> <select id="editSpecial"></select></div>
+      <div><strong>Tier:</strong> <select id="editTier"></select></div>
 
-    <div class="buttons">
-      <button id="btnSave">Save</button>
-      <button id="btnClose">Close</button>
+      <hr>
+
+      <div class="line"><span>Line 1:</span><select id="line1Stat"></select><input type="number" id="line1Val" placeholder="Value"></div>
+      <div class="line"><span>Line 2:</span><select id="line2Stat"></select><input type="number" id="line2Val" placeholder="Value"></div>
+      <div class="line"><span>Line 3:</span><select id="line3Stat"></select><input type="number" id="line3Val" placeholder="Value"></div>
+      <div class="line"><span>Line 4:</span><select id="line4Stat"></select><input type="number" id="line4Val" placeholder="Value"></div>
+    </div>
+
+    <div class="gear-buttons">
+      <button class="save" onclick="saveEditor()">Save</button>
+      <button class="close" onclick="closeEditor()">Close</button>
     </div>
   </div>
 </div>
-  <div class="modal-content gear-card">
-  <div class="gear-header">
-    <img src="https://via.placeholder.com/48" class="gear-icon">
-    <div>
-      <h2 id="modalTitle">Supreme Chaos Gloves</h2>
-      <p class="tier-label">Chaos • Ultimate</p>
-    </div>
-  </div>
 
-  <hr>
+<script>
+const DATA = {
+  tiers: ['Primal','Original','Chaos','Abyss'],
+  runes: ['','ATK SPD','Crit Chance','Evasion','DR'],
+  specials: ['','Crit DMG +80%','HP% +52%','Boss DMG','Racial DMG'],
+  stats: ['','ATK%','Crit DMG%','Crit Chance','Evasion','HP%','DEF%','DR%','Lifesteal%','ATK SPD','Racial DMG']
+};
 
-  <div class="gear-stats">
-    <div><strong>Rune:</strong> <select id="editRune"></select></div>
-    <div><strong>Special:</strong> <select id="editSpecial"></select></div>
-    <div><strong>Tier:</strong> <select id="editTier"></select></div>
+function fillSelect(id, options){
+  const sel = document.getElementById(id);
+  sel.innerHTML = '';
+  options.forEach(opt => {
+    const o = document.createElement('option');
+    o.value = o.textContent = opt;
+    sel.appendChild(o);
+  });
+}
 
-    <hr>
+function openEditor(slot){
+  document.getElementById('modalTitle').textContent = `Edit ${slot}`;
+  document.getElementById('tierLabel').textContent = 'Chaos • Ultimate'; // placeholder text
+  fillSelect('editTier', DATA.tiers);
+  fillSelect('editRune', DATA.runes);
+  fillSelect('editSpecial', DATA.specials);
+  fillSelect('line1Stat', DATA.stats);
+  fillSelect('line2Stat', DATA.stats);
+  fillSelect('line3Stat', DATA.stats);
+  fillSelect('line4Stat', DATA.stats);
 
-    <div class="line">
-      <span>Line 1:</span>
-      <select id="line1Stat"></select>
-      <input type="number" id="line1Val" placeholder="Value">
-    </div>
-    <div class="line">
-      <span>Line 2:</span>
-      <select id="line2Stat"></select>
-      <input type="number" id="line2Val" placeholder="Value">
-    </div>
-    <div class="line">
-      <span>Line 3:</span>
-      <select id="line3Stat"></select>
-      <input type="number" id="line3Val" placeholder="Value">
-    </div>
-    <div class="line">
-      <span>Line 4:</span>
-      <select id="line4Stat"></select>
-      <input type="number" id="line4Val" placeholder="Value">
-    </div>
-  </div>
+  document.getElementById('editorModal').classList.remove('hidden');
+}
 
-  <div class="gear-buttons">
-    <button class="save">Save</button>
-    <button class="close">Close</button>
-  </div>
-</div>
+function closeEditor(){
+  document.getElementById('editorModal').classList.add('hidden');
+}
 
-  <script>
-  // Data you can expand later (pull from JSON once you're ready)
-  const DATA = {
-    tiers: ['Primal','Original','Chaos','Abyss'],
-    runes: ['', 'ATK SPD','Crit Chance','Evasion','DR'],
-    specials: ['', 'Crit DMG +80%','HP% +52%','Boss DMG','Racial DMG'],
-    stats: ['', 'ATK%','Crit DMG%','Crit Chance','Evasion','HP%','DEF%','DR%','Lifesteal%']
-  };
-
-  const state = { currentSlot: null, slots: {} };
-
-  // Helpers
-  const $ = sel => document.querySelector(sel);
-  function fillSelect(sel, options, value=''){
-    sel.innerHTML = '';
-    options.forEach(opt => sel.appendChild(new Option(opt, opt)));
-    sel.value = value ?? '';
-  }
-
-  // Build lines UI fresh each time so there are never "No Options"
-  function buildLinesUI(slot, saved={}){
-    const wrap = $('#linesContainer');
-    wrap.innerHTML = '';
-    const lines = 4; // weapon same as others
-    for (let i=1;i<=lines;i++){
-      const label = document.createElement('label');
-      label.textContent = `Line ${i}`;
-
-      const statSel = document.createElement('select');
-      fillSelect(statSel, DATA.stats, saved[`line${i}:stat`] || '');
-
-      const val = document.createElement('input');
-      val.type = 'number'; val.min = '0'; val.step = '1';
-      val.placeholder = 'Value';
-      val.value = saved[`line${i}:value`] || '';
-
-      statSel.id = `editStat${i}`;
-      val.id = `editVal${i}`;
-
-      wrap.appendChild(label);
-      wrap.appendChild(statSel);
-      wrap.appendChild(val);
-    }
-  }
-
-  // Open editor for a slot
-  function openEditor(slot){
-    state.currentSlot = slot;
-    $('#modalTitle').textContent = `Edit ${slot}`;
-
-    const saved = state.slots[slot] || {};
-
-    fillSelect($('#editTier'), DATA.tiers, saved.tier || '');
-    fillSelect($('#editRune'), DATA.runes, saved.rune || '');
-    fillSelect($('#editSpecial'), DATA.specials, saved.special || '');
-
-    buildLinesUI(slot, saved);
-
-    $('#editorModal').classList.remove('hidden');
-  }
-
-  // Save from editor back into state + update the box text
-  function saveEditor(){
-    const slot = state.currentSlot; if(!slot) return;
-    const s = {};
-    s.tier = $('#editTier').value;
-    s.rune = $('#editRune').value;
-    s.special = $('#editSpecial').value;
-
-    for(let i=1;i<=4;i++){
-      s[`line${i}:stat`]  = $('#editStat'+i).value;
-      s[`line${i}:value`] = $('#editVal'+i).value;
-    }
-
-    state.slots[slot] = s;
-
-    const box = document.querySelector(`.slot[data-slot="${slot}"]`);
-    if (box) box.textContent = `${slot}\n${s.tier || ''}`;
-
-    closeEditor();
-  }
-
-  function closeEditor(){ $('#editorModal').classList.add('hidden'); }
-
-  // Wire up the ring and modal buttons
-  (function boot(){
-    document.querySelectorAll('.slot').forEach(box=>{
-      box.addEventListener('click', ()=>openEditor(box.dataset.slot));
-    });
-    $('#btnSave').addEventListener('click', saveEditor);
-    $('#btnClose').addEventListener('click', closeEditor);
-  })();
+function saveEditor(){
+  // grab values (later tie into optimizer rules)
+  const tier = document.getElementById('editTier').value;
+  const rune = document.getElementById('editRune').value;
+  const special = document.getElementById('editSpecial').value;
+  const l1 = document.getElementById('line1Stat').value + " " + document.getElementById('line1Val').value;
+  const l2 = document.getElementById('line2Stat').value + " " + document.getElementById('line2Val').value;
+  console.log("Saved:", {tier,rune,special,l1,l2});
+  closeEditor();
+}
 </script>
 
 </body>
