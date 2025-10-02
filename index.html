@@ -58,49 +58,53 @@
 .buttons button{ padding:.4rem .8rem; border-radius:6px; border:1px solid #333; background:#222; color:#e7ecf7; cursor:pointer }
 .buttons button:hover{ background:#3a3a3a }
     <script>
-  // Data you can expand later (pull from JSON once you're ready)
+  // Data you can expand later (pull from JSON once you're <script>
   const DATA = {
     tiers: ['Primal','Original','Chaos','Abyss'],
     runes: ['', 'ATK SPD','Crit Chance','Evasion','DR'],
+    // Special (5th) choices you called out
     specials: ['', 'Crit DMG +80%','HP% +52%','Boss DMG','Racial DMG'],
-    stats: ['', 'ATK%','Crit DMG%','Crit Chance','Evasion','HP%','DEF%','DR%','Lifesteal%']
+    // Normal stat pool (now includes ATK SPD + Racial DMG)
+    stats: ['', 'ATK%','Crit DMG%','Crit Chance','Evasion','HP%','DEF%','DR%','Lifesteal%','ATK SPD','Racial DMG']
   };
 
-  const state = { currentSlot: null, slots: {} };
-
-  // Helpers
-  const $ = sel => document.querySelector(sel);
   function fillSelect(sel, options, value=''){
     sel.innerHTML = '';
     options.forEach(opt => sel.appendChild(new Option(opt, opt)));
     sel.value = value ?? '';
   }
 
-  // Build lines UI fresh each time so there are never "No Options"
+  // REPLACE your old buildLinesUI with this version
   function buildLinesUI(slot, saved={}){
-    const wrap = $('#linesContainer');
+    const wrap = document.getElementById('linesContainer');
+    wrap.className = 'form-grid lines';     // make sure correct class is set
     wrap.innerHTML = '';
-    const lines = 4; // weapon same as others
+
+    const lines = 4; // weapons same as others here
     for (let i=1;i<=lines;i++){
+      const row = document.createElement('div');
+      row.className = 'line-row';
+
       const label = document.createElement('label');
       label.textContent = `Line ${i}`;
 
       const statSel = document.createElement('select');
       fillSelect(statSel, DATA.stats, saved[`line${i}:stat`] || '');
+      statSel.id = `editStat${i}`;
 
       const val = document.createElement('input');
       val.type = 'number'; val.min = '0'; val.step = '1';
       val.placeholder = 'Value';
       val.value = saved[`line${i}:value`] || '';
-
-      statSel.id = `editStat${i}`;
       val.id = `editVal${i}`;
 
-      wrap.appendChild(label);
-      wrap.appendChild(statSel);
-      wrap.appendChild(val);
+      row.appendChild(label);
+      row.appendChild(statSel);
+      row.appendChild(val);
+      wrap.appendChild(row);
     }
   }
+</script>
 
   // Open editor for a slot
   function openEditor(slot){
