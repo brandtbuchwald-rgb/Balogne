@@ -31,7 +31,33 @@
     .modal-content { background:#1a1c22; padding:1rem; border-radius:8px; min-width:220px; }
     .hidden { display:none; }
     button { margin-top:1rem; padding:.4rem .8rem; }
- <script>
+ /* top grid (Tier / Rune / Special) */
+.form-grid.top{
+  display:grid;
+  grid-template-columns:80px 1fr 80px 1fr 80px 1fr;
+  gap:.5rem;
+  align-items:center;
+}
+.form-grid.top label{ text-align:right; padding-right:.5rem }
+.form-grid.top select{ width:100%; padding:.35rem; border-radius:6px; border:1px solid #333; background:#0f1219; color:#e7ecf7 }
+
+/* lines section: one row per line, left→right */
+.lines{ display:flex; flex-direction:column; gap:.5rem }
+.line-row{
+  display:grid;
+  grid-template-columns:80px 1fr 90px;  /* Label | Stat select | Value */
+  gap:.5rem; align-items:center;
+}
+.line-row label{ text-align:right; padding-right:.5rem }
+.line-row select, .line-row input{
+  width:100%; padding:.35rem; border-radius:6px; border:1px solid #333; background:#0f1219; color:#e7ecf7
+}
+
+/* buttons row */
+.buttons{ display:flex; gap:.5rem; justify-content:flex-end; margin-top:1rem }
+.buttons button{ padding:.4rem .8rem; border-radius:6px; border:1px solid #333; background:#222; color:#e7ecf7; cursor:pointer }
+.buttons button:hover{ background:#3a3a3a }
+    <script>
   // Data you can expand later (pull from JSON once you're ready)
   const DATA = {
     tiers: ['Primal','Original','Chaos','Abyss'],
