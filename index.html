@@ -49,7 +49,8 @@
   <div class="modal-content">
     <h3 id="modalTitle"></h3>
 
-    <label>Tier
+    <div class="row">
+      <label>Tier</label>
       <select id="editTier">
         <option></option>
         <option>Primal</option>
@@ -57,9 +58,10 @@
         <option>Chaos</option>
         <option>Abyss</option>
       </select>
-    </label>
+    </div>
 
-    <label>Rune
+    <div class="row">
+      <label>Rune</label>
       <select id="editRune">
         <option></option>
         <option>ATK SPD</option>
@@ -67,9 +69,10 @@
         <option>Evasion</option>
         <option>DR</option>
       </select>
-    </label>
+    </div>
 
-    <label>Special
+    <div class="row">
+      <label>Special</label>
       <select id="editSpecial">
         <option></option>
         <option>Crit DMG +80%</option>
@@ -77,16 +80,57 @@
         <option>Boss DMG</option>
         <option>Racial DMG</option>
       </select>
-    </label>
-
-    <div id="editLines">
-      <label>Line 1: <input type="text"></label>
-      <label>Line 2: <input type="text"></label>
-      <label>Line 3: <input type="text"></label>
-      <label>Line 4: <input type="text"></label>
     </div>
 
-    <button id="btnClose">Close</button>
+    <hr>
+
+    <div id="editLines">
+      <div class="row">
+        <label>Line 1</label>
+        <select>
+          <option></option>
+          <option>ATK%</option>
+          <option>Crit DMG%</option>
+          <option>Crit Chance</option>
+          <option>Evasion</option>
+          <option>HP%</option>
+          <option>DEF%</option>
+          <option>DR%</option>
+        </select>
+        <input type="number" placeholder="Value">
+      </div>
+
+      <div class="row">
+        <label>Line 2</label>
+        <select>
+          <option></option>
+          <option>ATK%</option>
+          <option>Crit DMG%</option>
+          <option>Crit Chance</option>
+          <option>Evasion</option>
+          <option>HP%</option>
+          <option>DEF%</option>
+          <option>DR%</option>
+        </select>
+        <input type="number" placeholder="Value">
+      </div>
+
+      <div class="row">
+        <label>Line 3</label>
+        <select> … same options … </select>
+        <input type="number" placeholder="Value">
+      </div>
+
+      <div class="row">
+        <label>Line 4</label>
+        <select> … same options … </select>
+        <input type="number" placeholder="Value">
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button id="btnClose">Close</button>
+    </div>
   </div>
 </div>
 
