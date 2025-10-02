@@ -49,71 +49,28 @@
   <div class="modal-content">
     <h3 id="modalTitle"></h3>
 
-    <div class="form-grid">
+    <div class="form-grid top">
       <label>Tier</label>
-      <select id="editTier">
-        <option></option>
-        <option>Primal</option>
-        <option>Original</option>
-        <option>Chaos</option>
-        <option>Abyss</option>
-      </select>
+      <select id="editTier"></select>
 
       <label>Rune</label>
-      <select id="editRune">
-        <option></option>
-        <option>ATK SPD</option>
-        <option>Crit Chance</option>
-        <option>Evasion</option>
-        <option>DR</option>
-      </select>
+      <select id="editRune"></select>
 
       <label>Special</label>
-      <select id="editSpecial">
-        <option></option>
-        <option>Crit DMG +80%</option>
-        <option>HP% +52%</option>
-        <option>Boss DMG</option>
-        <option>Racial DMG</option>
-        <option>None</option>
-      </select>
+      <select id="editSpecial"></select>
     </div>
 
     <hr>
 
-    <div class="form-grid">
-      <label>Line 1</label>
-      <select>
-        <option></option>
-        <option>ATK%</option>
-        <option>Crit DMG%</option>
-        <option>Crit Chance</option>
-        <option>Evasion</option>
-        <option>HP%</option>
-        <option>DEF%</option>
-        <option>DR%</option>
-        <option>Lifesteal%</option>
-      </select>
-      <input type="number" placeholder="Value">
-
-      <label>Line 2</label>
-      <select>…same options…</select>
-      <input type="number" placeholder="Value">
-
-      <label>Line 3</label>
-      <select>…same options…</select>
-      <input type="number" placeholder="Value">
-
-      <label>Line 4</label>
-      <select>…same options…</select>
-      <input type="number" placeholder="Value">
-    </div>
+    <div id="linesContainer" class="form-grid lines"></div>
 
     <div class="buttons">
+      <button id="btnSave">Save</button>
       <button id="btnClose">Close</button>
     </div>
   </div>
 </div>
+  
 
   <script>
     const modal = document.getElementById('editorModal');
