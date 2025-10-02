@@ -112,10 +112,31 @@
     <hr>
 
     <div class="gear-stats">
-      <div><strong>Rune:</strong> <select id="editRune"></select></div>
-      <div><strong>Special:</strong> <select id="editSpecial"></select></div>
-      <div><strong>Tier:</strong> <select id="editTier"></select></div>
+      <div class="field-group">
+  <label for="tier">Tier:</label>
+  <select id="tier">
+    <option>Primal</option>
+    <option>Chaos</option>
+    <option>Abyss</option>
+    <option>Original</option>
+  </select>
+</div>
 
+<div class="field-group">
+  <label for="rune">Rune:</label>
+  <select id="rune">
+    <option>ATK SPD</option>
+    <option>Crit Chance</option>
+    <option>Evasion</option>
+    <option>DR%</option>
+    <option>Crit DMG%</option>
+    <option>Racial DMG</option>
+    <option>ATK%</option>
+    <option>HP%</option>
+    <option>DEF%</option>
+  </select>
+  <input type="number" id="runeValue" placeholder="Value">
+</div>
       <hr>
 
       <div class="line"><span>Line 1:</span><select id="line1Stat"></select><input type="number" id="line1Val" placeholder="Value"></div>
