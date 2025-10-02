@@ -3,53 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tiny Gear Test</title>
+  <title>Gear Ring Test</title>
   <style>
     body { background:#0b0c0f; color:#e7ecf7; font-family:sans-serif; text-align:center; }
-    .slot { 
-      width:100px; height:100px; 
-      background:#111; border:2px solid #333; border-radius:8px; 
+    .gear-ring { position:relative; width:320px; height:320px; margin:2rem auto; }
+    .slot {
+      width:64px; height:64px;
+      background:#111; border:2px solid #333; border-radius:8px;
       display:flex; align-items:center; justify-content:center;
-      margin:50px auto; cursor:pointer;
+      font-size:.8rem; cursor:pointer; position:absolute;
     }
+    /* positions */
+    .helm { top:0; left:50%; transform:translateX(-50%); }
+    .chest { top:20%; right:0; transform:translateY(-50%); }
+    .gloves { top:50%; right:0; transform:translateY(-50%); }
+    .boots { bottom:20%; right:0; transform:translateY(50%); }
+    .belt { bottom:0; left:50%; transform:translateX(-50%); }
+    .ring { bottom:20%; left:0; transform:translateY(50%); }
+    .weapon { top:50%; left:0; transform:translateY(-50%); }
+    .necklace { top:20%; left:0; transform:translateY(-50%); }
+    /* modal */
     .modal { 
-      position:fixed; top:0; left:0; width:100%; height:100%; 
+      position:fixed; top:0; left:0; width:100%; height:100%;
       background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center;
     }
-    .modal-content {
-      background:#1a1c22; padding:1rem; border-radius:8px; color:#fff;
-    }
+    .modal-content { background:#1a1c22; padding:1rem; border-radius:8px; min-width:220px; }
     .hidden { display:none; }
     button { margin-top:1rem; padding:.4rem .8rem; }
   </style>
 </head>
 <body>
 
-  <div class="slot" data-slot="Weapon">Weapon</div>
+  <div class="gear-ring">
+    <div class="slot helm" data-slot="Helm">Helm</div>
+    <div class="slot chest" data-slot="Chest">Chest</div>
+    <div class="slot gloves" data-slot="Gloves">Gloves</div>
+    <div class="slot boots" data-slot="Boots">Boots</div>
+    <div class="slot belt" data-slot="Belt">Belt</div>
+    <div class="slot ring" data-slot="Ring">Ring</div>
+    <div class="slot weapon" data-slot="Weapon">Weapon</div>
+    <div class="slot necklace" data-slot="Necklace">Necklace</div>
+  </div>
 
   <div id="editorModal" class="modal hidden">
     <div class="modal-content">
-      <h3>Edit Weapon</h3>
-      <label>Tier
-        <select>
-          <option>Primal</option>
-          <option>Chaos</option>
-          <option>Abyss</option>
-        </select>
-      </label>
-      <br>
+      <h3 id="modalTitle"></h3>
+      <p>This is where the editor will go.</p>
       <button id="btnClose">Close</button>
     </div>
   </div>
 
   <script>
-    const slot = document.querySelector('.slot');
     const modal = document.getElementById('editorModal');
+    const title = document.getElementById('modalTitle');
     const closeBtn = document.getElementById('btnClose');
 
-    slot.addEventListener('click', () => {
-      console.log("Clicked slot");
-      modal.classList.remove('hidden');
+    document.querySelectorAll('.slot').forEach(box => {
+      box.addEventListener('click', () => {
+        title.textContent = "Edit " + box.dataset.slot;
+        modal.classList.remove('hidden');
+      });
     });
 
     closeBtn.addEventListener('click', () => {
